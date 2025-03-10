@@ -21,14 +21,6 @@
         main {
             padding: 20px;
         }
-        section {
-            margin: 50px 0;
-        }
-        .pink-text {
-            color: pink;
-            font-weight: bold;
-            font-size: 32px;
-        }
         .gallery {
             display: flex;
             flex-direction: column;
@@ -60,11 +52,14 @@
     </header>
     <main>
         <section>
-            <p class="pink-text">Dziękuję ci bardzo za ten rok, jesteś wspaniała, miło jest mieć kogoś takiego obok. Kocham Cię!!!!</p>
+            <p style="color: pink; font-size: 32px; font-weight: bold;">
+                Dziękuję ci bardzo za ten rok, jesteś wspaniała, miło jest mieć kogoś takiego obok. Kocham Cię!!!!
+            </p>
         </section>
         <section id="gallery">
             <h2>Galeria</h2>
-            <input type="file" accept="image/*" onchange="uploadImage(event)">
+            <input type="file" accept="image/*" id="fileInput">
+            <button onclick="uploadImage()">Dodaj zdjęcie</button>
             <div class="gallery" id="gallery-container"></div>
         </section>
     </main>
@@ -103,6 +98,8 @@
                         }
                     });
                 });
+            }).catch(error => {
+                console.error("Błąd podczas pobierania zdjęć:", error);
             });
         }
 
@@ -125,25 +122,37 @@
             imageCount++;
         }
 
-        function uploadImage(event) {
+        function uploadImage() {
             if (imageCount >= maxImages) {
                 alert("Możesz dodać maksymalnie 17 zdjęć.");
                 return;
             }
 
-            const file = event.target.files[0];
-            if (file) {
-                const storageRef = storage.ref('images/' + file.name);
-                const uploadTask = storageRef.put(file);
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
 
-                uploadTask.then(snapshot => {
-                    return snapshot.ref.getDownloadURL();
-                }).then(downloadURL => {
-                    addImageToGallery(downloadURL);
-                }).catch(error => {
-                    console.error("Błąd podczas przesyłania pliku:", error);
-                });
+            if (!file) {
+                alert("Wybierz zdjęcie do dodania.");
+                return;
             }
+
+            const storageRef = storage.ref('images/' + file.name);
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on("state_changed",
+                (snapshot) => {
+                    console.log("Przesyłanie: ", (snapshot.bytesTransferred / snapshot.totalBytes) * 100, "%");
+                },
+                (error) => {
+                    console.error("Błąd przesyłania:", error);
+                    alert("Błąd przesyłania zdjęcia.");
+                },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        addImageToGallery(downloadURL);
+                    });
+                }
+            );
         }
 
         window.onload = loadImages;
