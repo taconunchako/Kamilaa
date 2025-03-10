@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMILA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #87CEEB;
+            text-align: center;
+        }
+        header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            font-size: 36px;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            margin: 50px 0;
+        }
+        .pink-text {
+            color: pink;
+            font-weight: bold;
+            font-size: 32px;
+        }
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .gallery-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gallery img {
+            width: 300px;
+            height: auto;
+            border-radius: 5px;
+        }
+        .love-text {
+            color: pink;
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 5px;
+        }
+    </style>
+    <script>
+        let imageCount = 0;
+        const maxImages = 17;
+
+        function saveImages() {
+            const images = document.querySelectorAll(".gallery img");
+            const imageArray = [];
+            images.forEach(img => imageArray.push(img.src));
+            localStorage.setItem("savedImages", JSON.stringify(imageArray));
+        }
+
+        function loadImages() {
+            const savedImages = JSON.parse(localStorage.getItem("savedImages")) || [];
+            const gallery = document.getElementById("gallery-container");
+            savedImages.forEach(src => {
+                if (imageCount < maxImages) {
+                    addImageToGallery(src);
+                }
+            });
+        }
+
+        function addImageToGallery(src) {
+            const gallery = document.getElementById("gallery-container");
+            const galleryItem = document.createElement("div");
+            galleryItem.classList.add("gallery-item");
+
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = "Dodane zdjęcie";
+
+            const text = document.createElement("p");
+            text.classList.add("love-text");
+            text.innerText = "KOCHAM CIĘ";
+
+            galleryItem.appendChild(img);
+            galleryItem.appendChild(text);
+            gallery.appendChild(galleryItem);
+            imageCount++;
+        }
+
+        function previewImage(event) {
+            if (imageCount >= maxImages) {
+                alert("Możesz dodać maksymalnie 17 zdjęć.");
+                return;
+            }
+            
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    addImageToGallery(e.target.result);
+                    saveImages();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.onload = loadImages;
+    </script>
+</head>
+<body>
+    <header>
+        KAMILA
+    </header>
+    <main>
+        <section>
+            <p class="pink-text">Dziękuję ci bardzo za ten rok, jesteś wspaniała, miło jest mieć kogoś takiego obok. Kocham Cię!!!!</p>
+        </section>
+        <section id="gallery">
+            <h2>Galeria</h2>
+            <input type="file" accept="image/*" onchange="previewImage(event)">
+            <div class="gallery" id="gallery-container"></div>
+        </section>
+    </main>
+</body>
+</html>
