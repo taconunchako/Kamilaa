@@ -21,6 +21,14 @@
         main {
             padding: 20px;
         }
+        section {
+            margin: 50px 0;
+        }
+        .pink-text {
+            color: pink;
+            font-weight: bold;
+            font-size: 32px;
+        }
         .gallery {
             display: flex;
             flex-direction: column;
@@ -45,30 +53,15 @@
             margin-top: 5px;
         }
     </style>
-</head>
-<body>
-    <header>
-        KAMILA
-    </header>
-    <main>
-        <section>
-            <p style="color: pink; font-size: 32px; font-weight: bold;">
-                Dziękuję ci bardzo za ten rok, jesteś wspaniała, miło jest mieć kogoś takiego obok. Kocham Cię!!!!
-            </p>
-        </section>
-        <section id="gallery">
-            <h2>Galeria</h2>
-            <input type="file" accept="image/*" id="fileInput">
-            <button onclick="uploadImage()">Dodaj zdjęcie</button>
-            <div class="gallery" id="gallery-container"></div>
-        </section>
-    </main>
-
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-storage.js"></script>
+    
     <script>
-        // Konfiguracja Firebase
+        let imageCount = 0;
+        const maxImages = 17;
+
         const firebaseConfig = {
             apiKey: "AIzaSyDj8ut8nTAvlldK9lRnUBuS8IfpDBxOn2A",
             authDomain: "kamila-ff74b.firebaseapp.com",
@@ -78,30 +71,9 @@
             appId: "1:275466950075:web:c8e0a24e1eb4c14afaa09e",
             measurementId: "G-MPYYW7KLXX"
         };
-
-        // Inicjalizacja Firebase
+        
         firebase.initializeApp(firebaseConfig);
         const storage = firebase.storage();
-
-        let imageCount = 0;
-        const maxImages = 17;
-
-        function loadImages() {
-            const gallery = document.getElementById("gallery-container");
-            const storageRef = storage.ref('images');
-            
-            storageRef.listAll().then((result) => {
-                result.items.forEach((imageRef) => {
-                    imageRef.getDownloadURL().then((url) => {
-                        if (imageCount < maxImages) {
-                            addImageToGallery(url);
-                        }
-                    });
-                });
-            }).catch(error => {
-                console.error("Błąd podczas pobierania zdjęć:", error);
-            });
-        }
 
         function addImageToGallery(src) {
             const gallery = document.getElementById("gallery-container");
@@ -145,17 +117,34 @@
                 },
                 (error) => {
                     console.error("Błąd przesyłania:", error);
-                    alert("Błąd przesyłania zdjęcia.");
+                    alert("Błąd przesyłania zdjęcia: " + error.message);
                 },
                 () => {
                     uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        console.log("Zdjęcie przesłane! URL:", downloadURL);
                         addImageToGallery(downloadURL);
+                    }).catch(error => {
+                        console.error("Błąd pobierania URL:", error);
                     });
                 }
             );
         }
-
-        window.onload = loadImages;
     </script>
+</head>
+<body>
+    <header>
+        KAMILA
+    </header>
+    <main>
+        <section>
+            <p class="pink-text">Dziękuję ci bardzo za ten rok, jesteś wspaniała, miło jest mieć kogoś takiego obok. Kocham Cię!!!!</p>
+        </section>
+        <section id="gallery">
+            <h2>Galeria</h2>
+            <input type="file" accept="image/*" id="fileInput">
+            <button onclick="uploadImage()">Dodaj zdjęcie</button>
+            <div class="gallery" id="gallery-container"></div>
+        </section>
+    </main>
 </body>
 </html>
