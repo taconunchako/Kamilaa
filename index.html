@@ -31,8 +31,8 @@
         }
         .gallery {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
             margin-top: 20px;
         }
@@ -53,92 +53,42 @@
             margin-top: 5px;
         }
     </style>
-
-    <!-- Firebase 8 (Działa bez importów) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-
     <script>
-        let imageCount = 0;
-        const maxImages = 17;
+        // 🚀 Automatyczne ładowanie zdjęć z folderu "images" w repozytorium na GitHub
+        const GITHUB_USER = "twojanazwa";  // ← Zmień na swoją nazwę użytkownika GitHub
+        const REPO_NAME = "kamila";  // ← Zmień na nazwę swojego repozytorium
+        const IMAGE_PATH = "images";  // Folder w repozytorium
 
-        // Firebase Config
-        var firebaseConfig = {
-            apiKey: "AIzaSyDj8ut8nTAvlldK9lRnUBuS8IfpDBxOn2A",
-            authDomain: "kamila-ff74b.firebaseapp.com",
-            projectId: "kamila-ff74b",
-            storageBucket: "kamila-ff74b.appspot.com",
-            messagingSenderId: "275466950075",
-            appId: "1:275466950075:web:c8e0a24e1eb4c14afaa09e",
-            measurementId: "G-MPYYW7KLXX"
-        };
+        function loadImagesFromGitHub() {
+            const gallery = document.getElementById("gallery-container");
+            const imageBaseURL = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/${IMAGE_PATH}/`;
 
-        // Inicjalizacja Firebase
-        firebase.initializeApp(firebaseConfig);
-        var storage = firebase.storage();
+            // Lista nazw zdjęć w folderze "images" (musisz ręcznie wpisać nazwy plików!)
+            const imageFiles = [
+                "zdjecie1.jpg",
+                "zdjecie2.jpg",
+                "zdjecie3.jpg"
+            ];
 
-        function saveImages() {
-            const images = document.querySelectorAll(".gallery img");
-            const imageArray = [];
-            images.forEach(img => imageArray.push(img.src));
-            localStorage.setItem("savedImages", JSON.stringify(imageArray));
-        }
+            imageFiles.forEach(image => {
+                const galleryItem = document.createElement("div");
+                galleryItem.classList.add("gallery-item");
 
-        function loadImages() {
-            const savedImages = JSON.parse(localStorage.getItem("savedImages")) || [];
-            savedImages.forEach(src => {
-                if (imageCount < maxImages) {
-                    addImageToGallery(src);
-                }
+                const img = document.createElement("img");
+                img.src = imageBaseURL + image;
+                img.alt = "Zdjęcie";
+
+                const text = document.createElement("p");
+                text.classList.add("love-text");
+                text.innerText = "KOCHAM CIĘ";
+
+                galleryItem.appendChild(img);
+                galleryItem.appendChild(text);
+                gallery.appendChild(galleryItem);
             });
         }
 
-        function addImageToGallery(src) {
-            const gallery = document.getElementById("gallery-container");
-            const galleryItem = document.createElement("div");
-            galleryItem.classList.add("gallery-item");
-
-            const img = document.createElement("img");
-            img.src = src;
-            img.alt = "Dodane zdjęcie";
-
-            const text = document.createElement("p");
-            text.classList.add("love-text");
-            text.innerText = "KOCHAM CIĘ";
-
-            galleryItem.appendChild(img);
-            galleryItem.appendChild(text);
-            gallery.appendChild(galleryItem);
-            imageCount++;
-        }
-
-        function previewImage(event) {
-            if (imageCount >= maxImages) {
-                alert("Możesz dodać maksymalnie 17 zdjęć.");
-                return;
-            }
-            
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadImage(file, e.target.result);
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function uploadImage(file, previewSrc) {
-            const storageRef = storage.ref('images/' + file.name);
-            storageRef.put(file).then(() => {
-                storageRef.getDownloadURL().then(url => {
-                    addImageToGallery(url);
-                    saveImages();
-                }).catch(error => console.error("Błąd pobierania URL: ", error));
-            }).catch(error => console.error("Błąd przesyłania: ", error));
-        }
-
-        window.onload = loadImages;
+        window.onload = loadImagesFromGitHub;
     </script>
 </head>
 <body>
@@ -151,7 +101,6 @@
         </section>
         <section id="gallery">
             <h2>Galeria</h2>
-            <input type="file" accept="image/*" onchange="previewImage(event)">
             <div class="gallery" id="gallery-container"></div>
         </section>
     </main>
