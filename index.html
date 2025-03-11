@@ -54,29 +54,29 @@
         }
     </style>
     <script>
-        // 🚀 Automatyczne ładowanie zdjęć z folderu "images" w repozytorium na GitHub
+        // 🚀 Automatyczne ładowanie 17 zdjęć z GitHub
         const GITHUB_USER = "taconunchako";  // ← Zmień na swoją nazwę użytkownika GitHub
         const REPO_NAME = "kamilaa";  // ← Zmień na nazwę swojego repozytorium
         const IMAGE_PATH = "imges";  // Folder w repozytorium
+        const MAX_IMAGES = 17;  // Maksymalna liczba zdjęć
 
         function loadImagesFromGitHub() {
             const gallery = document.getElementById("gallery-container");
             const imageBaseURL = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/${IMAGE_PATH}/`;
 
-            // Lista nazw zdjęć w folderze "images" (musisz ręcznie wpisać nazwy plików!)
-            const imageFiles = [
-                "zdjecie1.jpg",
-                "zdjecie2.jpg",
-                "zdjecie3.jpg"
-            ];
+            // Automatyczna lista zdjęć (zdjecie1.jpg - zdjecie17.jpg)
+            for (let i = 1; i <= MAX_IMAGES; i++) {
+                const imageUrl = `${imageBaseURL}zdjecie${i}.jpg`;
 
-            imageFiles.forEach(image => {
                 const galleryItem = document.createElement("div");
                 galleryItem.classList.add("gallery-item");
 
                 const img = document.createElement("img");
-                img.src = imageBaseURL + image;
+                img.src = imageUrl;
                 img.alt = "Zdjęcie";
+                img.onerror = function() {
+                    this.style.display = "none";  // Ukrywa brakujące zdjęcia
+                };
 
                 const text = document.createElement("p");
                 text.classList.add("love-text");
@@ -85,7 +85,7 @@
                 galleryItem.appendChild(img);
                 galleryItem.appendChild(text);
                 gallery.appendChild(galleryItem);
-            });
+            }
         }
 
         window.onload = loadImagesFromGitHub;
