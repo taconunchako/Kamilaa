@@ -54,37 +54,39 @@
         }
     </style>
     <script>
-        const GITHUB_USER = "taconunchako";
-        const REPO_NAME = "Kamilaa";
-        const IMAGE_PATH = "images";
-        const MAX_IMAGES = 17;
+       const GITHUB_USER = "taconunchako";
+const REPO_NAME = "Kamilaa";
+const IMAGE_PATH = "images";
+const MAX_IMAGES = 17;
 
-        function loadImagesFromGitHub() {
-            const gallery = document.getElementById("gallery-container");
-            const imageBaseURL = `https://github.com/taconunchako/kamilaa/blob/main/images/`;
+function loadImagesFromGitHub() {
+    const gallery = document.getElementById("gallery-container");
+    const imageBaseURL = `https://raw.githubusercontent.com/taconunchako/Kamilaa/main/images/`;
 
-            for (let i = 1; i <= MAX_IMAGES; i++) {
-                const imageUrl = `${imageBaseURL}zdjecie${i}.jpg?raw=true`;
+    for (let i = 1; i <= MAX_IMAGES; i++) {
+        const imageUrl = `${imageBaseURL}zdjecie${i}.jpg`;
 
-                const galleryItem = document.createElement("div");
-                galleryItem.classList.add("gallery-item");
+        const galleryItem = document.createElement("div");
+        galleryItem.classList.add("gallery-item");
 
-                const img = document.createElement("img");
-                img.src = imageUrl;
-                img.alt = "Zdjęcie";
-                img.onerror = function() {
-                    this.style.display = "none";
-                };
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "Zdjęcie";
+        img.onerror = function() {
+            this.style.display = "none";  // Ukrywa brakujące zdjęcia
+        };
 
-                const text = document.createElement("p");
-                text.classList.add("love-text");
-                text.innerText = "KOCHAM CIĘ";
+        const text = document.createElement("p");
+        text.classList.add("love-text");
+        text.innerText = "KOCHAM CIĘ";
 
-                galleryItem.appendChild(img);
-                galleryItem.appendChild(text);
-                gallery.appendChild(galleryItem);
-            }
-        }
+        galleryItem.appendChild(img);
+        galleryItem.appendChild(text);
+        gallery.appendChild(galleryItem);
+    }
+}
+
+window.onload = loadImagesFromGitHub;
 
         window.onload = loadImagesFromGitHub;
     </script>
